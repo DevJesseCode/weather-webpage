@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" type="text/css" href="./css/main.css" />
+		<link
+			rel="icon shortcut-icon"
+			type="image/png"
+			href="./img/site-icon.png"
+		/>
+		<title>What's the weather?</title>
+	</head>
+	<body>
+		<div class="nav-menu flex">
+			<div class="flex main-heading">
+				<img src="./img/site-icon.png" type="image/png" width="60px" />
+				<h1 class="title">What's the weather?</h1>
+			</div>
+			<div id="city-select">
+				<label for="city-input">City:&nbsp;</label>
+				<input type="text" id="city-input" placeholder="Lagos" />
+				<img
+					src="./img/search-icon.png"
+					type="image/png"
+					width="20px"
+					id="search-icon"
+				/>
+			</div>
+		</div>
+		<br />
+		<main>
+			<hr color="white" />
+			<div id="location-info">
+				<h1 id="city-name"></h1>
+				<h1 id="country-name"></h1>
+			</div>
+			<div id="card-container" class="flex">
+				<div class="weather-card"></div>
+				<div class="weather-card"></div>
+				<div class="weather-card"></div>
+				<div class="weather-card"></div>
+				<div class="weather-card"></div>
+				<div class="weather-card"></div>
+			</div>
+		</main>
+		<!-- <div> Icons made by <a href="https://www.flaticon.com/authors/alfredo-hernandez" title="Alfredo Hernandez"> Alfredo Hernandez </a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div> -->
+		<script src="./js/main.js" type="text/javascript"></script>
+	</body>
+</html>
