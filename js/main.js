@@ -3,7 +3,8 @@ const bodyStyle = bodyElement.style;
 const cityInputElement = document.getElementById("city-input");
 const cityNameElement = document.getElementById("city-name");
 const countryNameElement = document.getElementById("country-name");
-const weatherCards = document.querySelectorAll(".weather-card");
+const cardContainer = document.getElementById("card-container");
+
 const days = new Map([
 	[0, "Sunday"],
 	[1, "Monday"],
@@ -42,35 +43,43 @@ fetch(
 		cityInputElement.setAttribute("placeholder", y.state.name);
 		getWeatherData(y.state.name);
 	})
-	.catch((error) => console.error(`Error: ${error}`));
+	.catch((error) => console.error(`Error fetching IP information: ${error}`));
 
 function getWeatherData(input) {
+	document.querySelector(".loading").style.display = "flex";
 	weatherRequestURL = weatherRequestURL.replace(city, input);
 	city = input;
 	fetch(weatherRequestURL)
 		.then((x) => x.json())
 		.then((y) => replaceLocation(y.location))
-		.catch((error) => console.error(`Error: ${error}`));
+		.catch((error) =>
+			console.error(`Error fetching weather data: ${error}`)
+		);
 }
 
 function replaceLocation(location) {
 	cityNameElement.textContent = location.name;
 	countryNameElement.textContent = location.country;
+	document.querySelector(".loading").style.display = "none";
 }
 
 document.querySelector("#search-icon").addEventListener("click", function () {
 	getWeatherData(cityInputElement.value);
 });
 
-for (let i = 0; i < weatherCards.length; i++) {
-	let dayOfWeek = document.createElement("h2");
-	let date = new Date();
-	dayOfWeek.setAttribute("class", "day-of-week");
-	if (date.getDay() + i > 6) {
-		dayOfWeek.textContent = days.get(date.getDay() + i - 7);
-	} else {
-		dayOfWeek.textContent = days.get(date.getDay() + i);
-	}
+for (let i = 0; i < 6; i++) {
+	const weatherCard = document.createElement("div");
+	weatherCard.classList.add("weather-card");
 
-	weatherCards[i].appendChild(dayOfWeek);
+	const dayOfWeek = document.createElement("h2");
+	dayOfWeek.classList.add("day-of-week");
+
+	const date = new Date();
+	const nextDayIndex = (date.getDay() + i) % 7;
+	dayOfWeek.textContent = days.get(nextDayIndex);
+
+	weatherCard.appendChild(dayOfWeek);
+	cardContainer.appendChild(weatherCard);
 }
+
+const weatherCards = document.querySelectorAll(".weather-card");
