@@ -30,10 +30,11 @@ const months = new Map([
 ]);
 
 let weatherRequestURL =
-	"https://api.weatherapi.com/v1/forecast.json?key=a9801a7b792142839c1164254231905&q=Lagos&days=1&aqi=yes&alerts=no";
+	"https://api.weatherapi.com/v1/forecast.json?key=a9801a7b792142839c1164254231905&q=Lagos&days=6&aqi=yes&alerts=no";
 let city = "Lagos";
 let weatherData;
 let currentWeather;
+let weatherCards;
 
 fetch(
 	"https://api.geoapify.com/v1/ipinfo?apiKey=baff5b020c2b45ec9cddb5a829ae0a01"
@@ -51,35 +52,127 @@ function getWeatherData(input) {
 	city = input;
 	fetch(weatherRequestURL)
 		.then((x) => x.json())
-		.then((y) => replaceLocation(y.location))
+		.then((y) => {
+			weatherData = y;
+			replaceLocation(y.location);
+			document.querySelector(".weather-card") !== undefined
+				? (cardContainer.innerHTML = "")
+				: null;
+			createWeatherCards();
+		})
 		.catch((error) =>
 			console.error(`Error fetching weather data: ${error}`)
+		)
+		.finally(
+			() => (document.querySelector(".loading").style.display = "none")
 		);
 }
 
 function replaceLocation(location) {
 	cityNameElement.textContent = location.name;
 	countryNameElement.textContent = location.country;
-	document.querySelector(".loading").style.display = "none";
 }
 
 document.querySelector("#search-icon").addEventListener("click", function () {
 	getWeatherData(cityInputElement.value);
 });
 
-for (let i = 0; i < 6; i++) {
-	const weatherCard = document.createElement("div");
-	weatherCard.classList.add("weather-card");
+const createWeatherCards = () => {
+	for (let i = 0; i < 6; i++) {
+		const weatherCard = document.createElement("div");
+		weatherCard.classList.add("weather-card");
 
-	const dayOfWeek = document.createElement("h2");
-	dayOfWeek.classList.add("day-of-week");
+		const dayOfWeek = document.createElement("h2");
+		dayOfWeek.classList.add("day-of-week");
 
-	const date = new Date();
-	const nextDayIndex = (date.getDay() + i) % 7;
-	dayOfWeek.textContent = days.get(nextDayIndex);
+		const date = new Date();
+		const nextDayIndex = (date.getDay() + i) % 7;
+		dayOfWeek.textContent = days.get(nextDayIndex);
 
-	weatherCard.appendChild(dayOfWeek);
-	cardContainer.appendChild(weatherCard);
+		const conditionIconContainer = document.createElement("div");
+		conditionIconContainer.setAttribute(
+			"class",
+			"condition-icon-container"
+		);
+
+		const conditionIcon = document.createElement("img");
+		conditionIcon.setAttribute(
+			"src",
+			weatherData.forecast.forecastday[i].day.condition.icon
+		);
+		conditionIcon.setAttribute(
+			"title",
+			weatherData.forecast.forecastday[i].day.condition.text
+		);
+		conditionIcon.setAttribute("type", "image/png");
+		conditionIcon.classList.add("condition-icon");
+		weatherCard.appendChild(dayOfWeek);
+		weatherCard.appendChild(conditionIconContainer);
+		conditionIconContainer.appendChild(conditionIcon);
+		cardContainer.appendChild(weatherCard);
+	}
+	createWeatherInfoIcons();
+};
+
+function createWeatherInfoIcons() {
+	weatherCards = document.querySelectorAll(".weather-card");
+	for (let i = 0; i < weatherCards.length; i++) {
+		const icons = ["./img/thermometer.png", "./img/wind.png"];
+		let weatherInfoContainer;
+		for (entry of icons) {
+			const image = document.createElement("img");
+			const infoText = document.createElement("span");
+			weatherInfoContainer = document.createElement("div");
+			weatherInfoContainer.classList.add("weather-info-container");
+			image.setAttribute("src", entry);
+			image.setAttribute("type", "image/png");
+			image.classList.add("info-icon");
+			infoText.classList.add("weather-info");
+			if (icons.indexOf(entry) === 0) {
+				infoText.classList.add("temperature");
+			} else {
+				infoText.classList.add("wind-speed");
+			}
+			weatherInfoContainer.appendChild(image);
+			weatherInfoContainer.appendChild(infoText);
+			weatherCards[i].appendChild(weatherInfoContainer);
+		}
+		const dateElement = document.createElement("div");
+		dateElement.classList.add("weather-date");
+		dateElement.textContent = weatherData.forecast.forecastday[i].date;
+		weatherCards[i].appendChild(dateElement);
+	}
+	let infoIcons = document.querySelectorAll(".info-icon");
+	let infoIconsTitle = ["Average Temperature", "Max Wind Speed"];
+	for (let i = 0; i < infoIcons.length; i++) {
+		infoIcons[i].setAttribute("title", infoIconsTitle[i]);
+	}
+	fillWeatherInfo();
 }
 
-const weatherCards = document.querySelectorAll(".weather-card");
+function fillWeatherInfo() {
+	const weatherInfoElements = document.querySelectorAll(".weather-info");
+	const dataArray = weatherData.forecast.forecastday;
+	const data = [
+		dataArray[0].day.avgtemp_c,
+		dataArray[0].day.maxwind_kph,
+		dataArray[1].day.avgtemp_c,
+		dataArray[1].day.maxwind_kph,
+		dataArray[2].day.avgtemp_c,
+		dataArray[2].day.maxwind_kph,
+		dataArray[3].day.avgtemp_c,
+		dataArray[3].day.maxwind_kph,
+		dataArray[4].day.avgtemp_c,
+		dataArray[4].day.maxwind_kph,
+		dataArray[5].day.avgtemp_c,
+		dataArray[5].day.maxwind_kph,
+	];
+	for (let i = 0; i < weatherInfoElements.length; i++) {
+		weatherInfoElements[i].textContent = data[i];
+		if (weatherInfoElements[i].classList.contains("temperature")) {
+			weatherInfoElements[i].textContent += "°C";
+		} else {
+			weatherInfoElements[i].textContent += " km/h";
+		}
+	}
+}
