@@ -143,7 +143,20 @@ function createWeatherInfoIcons() {
 		weatherCards[i].appendChild(dateElement);
 	}
 	let infoIcons = document.querySelectorAll(".info-icon");
-	let infoIconsTitle = ["Average Temperature", "Max Wind Speed"];
+	let infoIconsTitle = [
+		"Average Temperature",
+		"Max Wind Speed",
+		"Average Temperature",
+		"Max Wind Speed",
+		"Average Temperature",
+		"Max Wind Speed",
+		"Average Temperature",
+		"Max Wind Speed",
+		"Average Temperature",
+		"Max Wind Speed",
+		"Average Temperature",
+		"Max Wind Speed",
+	];
 	for (let i = 0; i < infoIcons.length; i++) {
 		infoIcons[i].setAttribute("title", infoIconsTitle[i]);
 	}

@@ -169,6 +169,10 @@ main {
 	animation: dash 1.5s ease-in-out infinite;
 }
 
+#loading-image {
+	width: 100px;
+}
+
 .condition-icon {
 	width: 100px;
 	margin-left: 25%;
