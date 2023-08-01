@@ -36,9 +36,7 @@ let weatherData;
 let currentWeather;
 let weatherCards;
 
-fetch(
-	"https://api.geoapify.com/v1/ipinfo?apiKey=baff5b020c2b45ec9cddb5a829ae0a01"
-)
+fetch("https://api.geoapify.com/v1/ipinfo?apiKey=baff5b020c2b45ec9cddb5a829ae0a01")
 	.then((x) => x.json())
 	.then(function (y) {
 		cityInputElement.setAttribute("placeholder", y.state.name);
@@ -55,17 +53,11 @@ function getWeatherData(input) {
 		.then((y) => {
 			weatherData = y;
 			replaceLocation(y.location);
-			document.querySelector(".weather-card") !== undefined
-				? (cardContainer.innerHTML = "")
-				: null;
+			document.querySelector(".weather-card") !== undefined ? (cardContainer.innerHTML = "") : null;
 			createWeatherCards();
 		})
-		.catch((error) =>
-			console.error(`Error fetching weather data: ${error}`)
-		)
-		.finally(
-			() => (document.querySelector(".loading").style.display = "none")
-		);
+		.catch((error) => console.error(`Error fetching weather data: ${error}`))
+		.finally(() => (document.querySelector(".loading").style.display = "none"));
 }
 
 function replaceLocation(location) {
@@ -78,7 +70,7 @@ document.querySelector("#search-icon").addEventListener("click", function () {
 });
 
 const createWeatherCards = () => {
-	for (let i = 0; i < 6; i++) {
+	for (let i = 0; i < weatherData.forecast.forecastday.length; i++) {
 		const weatherCard = document.createElement("div");
 		weatherCard.classList.add("weather-card");
 
@@ -90,26 +82,25 @@ const createWeatherCards = () => {
 		dayOfWeek.textContent = days.get(nextDayIndex);
 
 		const conditionIconContainer = document.createElement("div");
-		conditionIconContainer.setAttribute(
-			"class",
-			"condition-icon-container"
-		);
+		conditionIconContainer.setAttribute("class", "condition-icon-container");
 
 		const conditionIcon = document.createElement("img");
-		conditionIcon.setAttribute(
-			"src",
-			weatherData.forecast.forecastday[i].day.condition.icon
-		);
-		conditionIcon.setAttribute(
-			"title",
-			weatherData.forecast.forecastday[i].day.condition.text
-		);
+		conditionIcon.setAttribute("src", weatherData.forecast.forecastday[i].day.condition.icon);
+		conditionIcon.setAttribute("title", weatherData.forecast.forecastday[i].day.condition.text);
 		conditionIcon.setAttribute("type", "image/png");
 		conditionIcon.classList.add("condition-icon");
 		weatherCard.appendChild(dayOfWeek);
 		weatherCard.appendChild(conditionIconContainer);
 		conditionIconContainer.appendChild(conditionIcon);
 		cardContainer.appendChild(weatherCard);
+	}
+
+	if (document.querySelectorAll(".weather-card").length < 6) {
+		document.querySelector("#card-container").style.width =
+			200 + 230 * (document.querySelectorAll(".weather-card").length - 1) + "px";
+		for (const element of document.querySelectorAll(".weather-card")) {
+			element.style.width = "200px";
+		}
 	}
 	createWeatherInfoIcons();
 };
@@ -143,20 +134,11 @@ function createWeatherInfoIcons() {
 		weatherCards[i].appendChild(dateElement);
 	}
 	let infoIcons = document.querySelectorAll(".info-icon");
-	let infoIconsTitle = [
-		"Average Temperature",
-		"Max Wind Speed",
-		"Average Temperature",
-		"Max Wind Speed",
-		"Average Temperature",
-		"Max Wind Speed",
-		"Average Temperature",
-		"Max Wind Speed",
-		"Average Temperature",
-		"Max Wind Speed",
-		"Average Temperature",
-		"Max Wind Speed",
-	];
+	let infoIconsTitle = [];
+	for (let i = 0; i < 6; i++) {
+		infoIconsTitle.push("Average Temperature");
+		infoIconsTitle.push("Max Wind Speed");
+	}
 	for (let i = 0; i < infoIcons.length; i++) {
 		infoIcons[i].setAttribute("title", infoIconsTitle[i]);
 	}
@@ -166,20 +148,11 @@ function createWeatherInfoIcons() {
 function fillWeatherInfo() {
 	const weatherInfoElements = document.querySelectorAll(".weather-info");
 	const dataArray = weatherData.forecast.forecastday;
-	const data = [
-		dataArray[0].day.avgtemp_c,
-		dataArray[0].day.maxwind_kph,
-		dataArray[1].day.avgtemp_c,
-		dataArray[1].day.maxwind_kph,
-		dataArray[2].day.avgtemp_c,
-		dataArray[2].day.maxwind_kph,
-		dataArray[3].day.avgtemp_c,
-		dataArray[3].day.maxwind_kph,
-		dataArray[4].day.avgtemp_c,
-		dataArray[4].day.maxwind_kph,
-		dataArray[5].day.avgtemp_c,
-		dataArray[5].day.maxwind_kph,
-	];
+	const data = [];
+	for (let i = 0; i < dataArray.length; i++) {
+		data.push(dataArray[i].day.avgtemp_c);
+		data.push(dataArray[i].day.maxwind_kph);
+	}
 	for (let i = 0; i < weatherInfoElements.length; i++) {
 		weatherInfoElements[i].textContent = data[i];
 		if (weatherInfoElements[i].classList.contains("temperature")) {
