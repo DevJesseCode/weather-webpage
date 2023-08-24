@@ -69,6 +69,10 @@ document.querySelector("#search-icon").addEventListener("click", function () {
 	getWeatherData(cityInputElement.value);
 });
 
+document.querySelector("#search-icon").addEventListener("keydown", function (e) {
+	if (e.key === 'Enter') getWeatherData(cityInputElement.value);
+});
+
 const createWeatherCards = () => {
 	for (let i = 0; i < weatherData.forecast.forecastday.length; i++) {
 		const weatherCard = document.createElement("div");
@@ -162,3 +166,4 @@ function fillWeatherInfo() {
 		}
 	}
 }
+
