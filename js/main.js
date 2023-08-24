@@ -69,7 +69,7 @@ document.querySelector("#search-icon").addEventListener("click", function () {
 	getWeatherData(cityInputElement.value);
 });
 
-document.querySelector("#search-icon").addEventListener("keypress", function (e) {
+cityInputElement.addEventListener("keydown", (e) => {
 	if (e.key === 'Enter') getWeatherData(cityInputElement.value);
 });
 
